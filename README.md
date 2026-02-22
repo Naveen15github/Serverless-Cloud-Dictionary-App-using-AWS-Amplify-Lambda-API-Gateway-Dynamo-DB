@@ -1,6 +1,6 @@
 # Serverless Cloud Dictionary Application
 
-![Alt Text](image_url "Optional Title")
+![Alt Text](https://github.com/Naveen15github/Serverless-Cloud-Dictionary-App-using-AWS-Amplify-Lambda-API-Gateway-Dynamo-DB/blob/c66e4a5fc196cbd03e228244b2a213bf0d559ab9/Gemini_Generated_Image_4wzzef4wzzef4wzz.png)
 
 ## Project Overview
 
@@ -50,7 +50,7 @@ The architecture is designed to be fully serverless:
 
 ### 1️⃣ Frontend Setup with AWS Amplify
 
-![Alt Text](image_url "Optional Title")
+![Alt Text](https://github.com/Naveen15github/Serverless-Cloud-Dictionary-App-using-AWS-Amplify-Lambda-API-Gateway-Dynamo-DB/blob/c66e4a5fc196cbd03e228244b2a213bf0d559ab9/Screenshot%20(475).png)
 
 1. Clone the React repository locally.
 2. Install dependencies using:
@@ -76,7 +76,7 @@ The architecture is designed to be fully serverless:
 
 ### 2️⃣ DynamoDB Configuration
 
-![Alt Text](image_url "Optional Title")
+![Alt Text](https://github.com/Naveen15github/Serverless-Cloud-Dictionary-App-using-AWS-Amplify-Lambda-API-Gateway-Dynamo-DB/blob/c66e4a5fc196cbd03e228244b2a213bf0d559ab9/Screenshot%20(477).png)
 
 1. Create a DynamoDB table named `CloudDefinitions` with `term` as the primary key.
 2. Prepare dictionary data in JSON files (max 25 records per batch for AWS CLI):
@@ -99,7 +99,7 @@ The architecture is designed to be fully serverless:
 
 ### 3️⃣ Lambda Function for Fetching Terms
 
-![Alt Text](image_url "Optional Title")
+![Alt Text](https://github.com/Naveen15github/Serverless-Cloud-Dictionary-App-using-AWS-Amplify-Lambda-API-Gateway-Dynamo-DB/blob/c66e4a5fc196cbd03e228244b2a213bf0d559ab9/Screenshot%20(478).png)
 
 Create a **Python Lambda function** with the following responsibilities:
 
@@ -178,7 +178,7 @@ def lambda_handler(event, context):
 
 ### 4️⃣ API Gateway Configuration
 
-![Alt Text](image_url "Optional Title")
+![Alt Text](https://github.com/Naveen15github/Serverless-Cloud-Dictionary-App-using-AWS-Amplify-Lambda-API-Gateway-Dynamo-DB/blob/c66e4a5fc196cbd03e228244b2a213bf0d559ab9/Screenshot%20(480).png)
 
 1. Create a **REST API** in API Gateway.
 2. Integrate the API with the Lambda function using **Lambda Proxy Integration**.
@@ -189,9 +189,9 @@ def lambda_handler(event, context):
 
 ---
 
-![Alt Text](image_url "Optional Title")
-![Alt Text](image_url "Optional Title")
-![Alt Text](image_url "Optional Title")
+![Alt Text](https://github.com/Naveen15github/Serverless-Cloud-Dictionary-App-using-AWS-Amplify-Lambda-API-Gateway-Dynamo-DB/blob/c66e4a5fc196cbd03e228244b2a213bf0d559ab9/Screenshot%20(481).png)
+![Alt Text](https://github.com/Naveen15github/Serverless-Cloud-Dictionary-App-using-AWS-Amplify-Lambda-API-Gateway-Dynamo-DB/blob/c66e4a5fc196cbd03e228244b2a213bf0d559ab9/Screenshot%20(482).png)
+![Alt Text](https://github.com/Naveen15github/Serverless-Cloud-Dictionary-App-using-AWS-Amplify-Lambda-API-Gateway-Dynamo-DB/blob/c66e4a5fc196cbd03e228244b2a213bf0d559ab9/Screenshot%20(483).png)
 
 ## Enhancements & Future Work
 
