@@ -213,5 +213,3 @@ def lambda_handler(event, context):
 ## Conclusion
 
 This project demonstrates a full **serverless architecture** for a cloud dictionary application using AWS. From frontend hosting to API management and database queries, all steps are implemented in a scalable, maintainable, and cost-efficient manner.
-
-Do you want me to do that next?
