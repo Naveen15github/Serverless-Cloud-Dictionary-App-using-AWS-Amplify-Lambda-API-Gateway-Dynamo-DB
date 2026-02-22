@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Serverless Cloud Dictionary Application
 
 ### Project Overview:
@@ -161,3 +162,6 @@ aws dynamodb batch-write-item --request-items file://records/records-2.json
 aws dynamodb batch-write-item --request-items file://records/records-3.json
 aws dynamodb batch-write-item --request-items file://records/records-4.json
 ```
+=======
+# Serverless-Cloud-Dictionary-App-using-AWS-Amplify-Lambda-API-Gateway-Dynamo-DB
+>>>>>>> 8fc9709c1835df530ee5b341594f0e1e31711ec4
