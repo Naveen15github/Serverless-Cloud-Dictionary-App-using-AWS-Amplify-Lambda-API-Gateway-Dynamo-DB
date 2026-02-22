@@ -1,167 +1,219 @@
-<<<<<<< HEAD
 # Serverless Cloud Dictionary Application
 
-### Project Overview:
-In this project, we'll be developing a serverless cloud dictionary application where users can:
+![Alt Text](image_url "Optional Title")
 
-* Search for terms related to cloud technologies.
-* View the definitions of cloud terms.
-* Utilize a serverless architecture using AWS services.
-* The application will use Lambda for backend processing, API Gateway for managing the API endpoints, and DynamoDB for storing the dictionary terms and their definitions.
+## Project Overview
 
-The frontend, a React application, will be hosted on AWS Amplify, and API requests will be made to interact with the database.
+This project implements a **serverless cloud dictionary application** where users can:
 
-### Services Used 🛠
-* AWS Amplify: Host the frontend React application.
-* AWS Lambda: Handle API requests for retrieving terms and adding new ones.
-* AWS API Gateway: Manage API endpoints to allow communication between frontend and Lambda functions.
-* AWS DynamoDB: Store dictionary terms and definitions.
-* IAM Roles & Policies: Secure access to AWS resources like Lambda, DynamoDB, and API Gateway.
+* Search for cloud-related terms.
+* View detailed definitions of cloud technologies.
+* Interact with a highly scalable backend using AWS serverless services.
 
-### Project Architecture:
-<img width="1381" height="541" alt="image" src="https://github.com/user-attachments/assets/56a6c9b2-dece-49dc-ad62-29848fa59418" />
+The application follows a **serverless architecture**, using **AWS Lambda** for backend logic, **API Gateway** for managing API endpoints, and **DynamoDB** for storing dictionary terms and definitions.
 
-### Steps to be performed:
-In the next few lessons, we'll be going through the following steps.
+The **frontend**, built with React, is hosted on **AWS Amplify**, and communicates with the backend via REST API calls.
 
-* Setup frontend and host it on AWS Amplify
-* Configure DynamoDB to store Cloud Definitions
-* Create Lambda function for fetching terms
-* Setup API Gateway for API management
+---
 
-### Lambda Function Code:
+## Features
+
+* Search cloud terms and view definitions in real-time.
+* Serverless backend ensures cost-efficient and scalable architecture.
+* Easy-to-update dictionary via batch upload to DynamoDB.
+* Cross-origin resource sharing (CORS) enabled for secure frontend-backend communication.
+
+---
+
+## AWS Services Used 🛠
+
+* **AWS Amplify** – Hosts the React frontend application.
+* **AWS Lambda** – Handles API requests for retrieving and adding dictionary terms.
+* **AWS API Gateway** – Exposes REST API endpoints to interact with Lambda functions.
+* **AWS DynamoDB** – Stores the dictionary data as key-value pairs (`term: definition`).
+* **IAM Roles & Policies** – Provides secure access for Lambda to interact with DynamoDB and API Gateway.
+
+---
+
+## Project Architecture
+
+The architecture is designed to be fully serverless:
+
+1. The **React frontend** sends HTTPS requests to **API Gateway**.
+2. **API Gateway** triggers the corresponding **Lambda function**.
+3. **Lambda** queries **DynamoDB** for the requested term.
+4. **DynamoDB** returns the definition to Lambda, which responds back to the frontend.
+
+<img width="1381" height="541" alt="Serverless Architecture Diagram" src="https://github.com/user-attachments/assets/56a6c9b2-dece-49dc-ad62-29848fa59418" />
+
+---
+
+## Step-by-Step Implementation
+
+### 1️⃣ Frontend Setup with AWS Amplify
+
+![Alt Text](image_url "Optional Title")
+
+1. Clone the React repository locally.
+2. Install dependencies using:
+
+   ```bash
+   npm install
+   ```
+3. Test the application locally:
+
+   ```bash
+   npm start
+   ```
+4. Deploy the frontend to **AWS Amplify**:
+
+   ```bash
+   amplify init
+   amplify add hosting
+   amplify publish
+   ```
+5. Confirm the frontend loads and can make API requests.
+
+---
+
+### 2️⃣ DynamoDB Configuration
+
+![Alt Text](image_url "Optional Title")
+
+1. Create a DynamoDB table named `CloudDefinitions` with `term` as the primary key.
+2. Prepare dictionary data in JSON files (max 25 records per batch for AWS CLI):
+
+   ```
+   records/records-1.json
+   records/records-2.json
+   ...
+   ```
+3. Upload data using AWS CLI:
+
+   ```bash
+   aws dynamodb batch-write-item --request-items file://records/records-1.json
+   aws dynamodb batch-write-item --request-items file://records/records-2.json
+   aws dynamodb batch-write-item --request-items file://records/records-3.json
+   aws dynamodb batch-write-item --request-items file://records/records-4.json
+   ```
+
+---
+
+### 3️⃣ Lambda Function for Fetching Terms
+
+![Alt Text](image_url "Optional Title")
+
+Create a **Python Lambda function** with the following responsibilities:
+
+* Extract the search term from `queryStringParameters`, `pathParameters`, or request `body`.
+* Query DynamoDB for the term definition.
+* Return a JSON response with the term and its definition or appropriate error messages.
+
+**Lambda Function Code:**
 
 ```python
 import json
 import boto3
 
-# Create a DynamoDB client
 dynamodb = boto3.client('dynamodb')
-
-# Your DynamoDB table name
 table_name = 'CloudDefinitions'
 
 def lambda_handler(event, context):
     try:
-        # Debug: Log the entire event
-        print("Event received:", json.dumps(event))
-        
-        # Try to get term from multiple sources
         term = ''
-        
-        # Method 1: Query parameters (for GET requests)
+        # Check GET query parameters
         query_params = event.get('queryStringParameters') or {}
         if query_params and query_params.get('term'):
             term = query_params.get('term')
-        
-        # Method 2: Path parameters
+        # Check path parameters
         path_params = event.get('pathParameters') or {}
-        if not term and path_params and path_params.get('term'):
+        if not term and path_params.get('term'):
             term = path_params.get('term')
-        
-        # Method 3: Body (for POST requests)
+        # Check POST body
         if not term and event.get('body'):
-            try:
-                body = json.loads(event['body'])
-                term = body.get('term', '')
-            except:
-                pass
-        
-        # Method 4: Direct event (for test events)
+            body = json.loads(event['body'])
+            term = body.get('term', '')
+        # Check direct event test
         if not term:
             term = event.get('term', '')
-        
-        print("Term extracted:", term)
-        
-        # If no term provided, return error with debug info
+
         if not term:
             return {
                 'statusCode': 400,
                 'headers': {
                     'Content-Type': 'application/json',
                     'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'OPTIONS,GET,POST',
-                    'Access-Control-Allow-Headers': 'Content-Type',
                 },
-                'body': json.dumps({
-                    'message': 'Term parameter is required',
-                    'debug': {
-                        'queryStringParameters': event.get('queryStringParameters'),
-                        'pathParameters': event.get('pathParameters'),
-                        'body': event.get('body'),
-                        'httpMethod': event.get('httpMethod'),
-                        'event_keys': list(event.keys())
-                    }
-                })
+                'body': json.dumps({'message': 'Term parameter is required'})
             }
-        
-        # Query the DynamoDB table for the term
-        response = dynamodb.get_item(
-            TableName=table_name,
-            Key={'term': {'S': term}}
-        )
-        
-        # Check if the term exists in the table
+
+        response = dynamodb.get_item(TableName=table_name, Key={'term': {'S': term}})
         if 'Item' in response:
-            definition = response['Item']['definition']['S']
             return {
                 'statusCode': 200,
-                'headers': {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'OPTIONS,GET,POST',
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                },
-                'body': json.dumps({
-                    'term': term,
-                    'definition': definition
-                })
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({'term': term, 'definition': response['Item']['definition']['S']})
             }
         else:
             return {
                 'statusCode': 404,
-                'headers': {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'OPTIONS,GET,POST',
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                },
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
                 'body': json.dumps({'message': f'Term "{term}" not found'})
             }
-            
     except Exception as e:
         return {
             'statusCode': 500,
-            'headers': {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,GET,POST',
-                'Access-Control-Allow-Headers': 'Content-Type',
-            },
-            'body': json.dumps({
-                'error': 'Internal server error',
-                'message': str(e)
-            })
+            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+            'body': json.dumps({'error': str(e)})
         }
 ```
-TEST Event:
 
-```sh
+**Test Event:**
+
+```json
 {
-  "queryStringParameters": {
-    "term": "AWS KMS"
-  }
+  "queryStringParameters": { "term": "AWS KMS" }
 }
 ```
 
-### DynamoDB AWS CLI Commands:
+---
 
-```sh
-aws dynamodb batch-write-item --request-items file://records/records-1.json
-aws dynamodb batch-write-item --request-items file://records/records-2.json
-aws dynamodb batch-write-item --request-items file://records/records-3.json
-aws dynamodb batch-write-item --request-items file://records/records-4.json
-```
-=======
-# Serverless-Cloud-Dictionary-App-using-AWS-Amplify-Lambda-API-Gateway-Dynamo-DB
->>>>>>> 8fc9709c1835df530ee5b341594f0e1e31711ec4
+### 4️⃣ API Gateway Configuration
+
+![Alt Text](image_url "Optional Title")
+
+1. Create a **REST API** in API Gateway.
+2. Integrate the API with the Lambda function using **Lambda Proxy Integration**.
+3. Enable **CORS** for cross-origin requests.
+4. Deploy the API and get the endpoint URL.
+5. Update the frontend to point to the API Gateway URL.
+6. Test the full application by searching for terms like `AWS KMS`.
+
+---
+
+![Alt Text](image_url "Optional Title")
+![Alt Text](image_url "Optional Title")
+![Alt Text](image_url "Optional Title")
+
+## Enhancements & Future Work
+
+* Expand the dictionary with more cloud terms.
+* Add fuzzy search for partial matches.
+* Introduce user authentication for adding custom terms.
+* Configure custom domains and firewall for production deployment.
+* Implement logging and monitoring using AWS CloudWatch.
+
+---
+
+## Estimated Time & Cost
+
+* **Time:** 2–3 hours for complete setup and testing.
+* **Cost:** Free-tier eligible with AWS services.
+
+---
+
+## Conclusion
+
+This project demonstrates a full **serverless architecture** for a cloud dictionary application using AWS. From frontend hosting to API management and database queries, all steps are implemented in a scalable, maintainable, and cost-efficient manner.
+
+Do you want me to do that next?
