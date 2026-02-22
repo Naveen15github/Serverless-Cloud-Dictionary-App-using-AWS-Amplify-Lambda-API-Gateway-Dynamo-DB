@@ -44,8 +44,6 @@ The architecture is designed to be fully serverless:
 3. **Lambda** queries **DynamoDB** for the requested term.
 4. **DynamoDB** returns the definition to Lambda, which responds back to the frontend.
 
-<img width="1381" height="541" alt="Serverless Architecture Diagram" src="https://github.com/user-attachments/assets/56a6c9b2-dece-49dc-ad62-29848fa59418" />
-
 ---
 
 ## Step-by-Step Implementation
